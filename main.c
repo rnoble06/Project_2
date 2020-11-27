@@ -166,9 +166,14 @@ int check_ext(const char *filename)
   while(filename[idx] != '\0')
   {
     if(filename[idx] != ext[i])
-    return 0;
+    {
+      fprintf(stderr,"Incorrect file extension\n");
+      return 0;
+    }
     if(filename[idx] == ext[i])
-    idx++; i++;
+    {
+      idx++; i++;
+    }
   }
   return 1;
 }
@@ -191,10 +196,10 @@ int check_magic(FILE *fp)
 
     if (strcmp(magic,first_four) == 0)
     {
-      printf("Successful\n");
+      printf("First four are: %s\n",first_four);
       return 1;
     }
-  fprintf(stderr, "magic number does not match!");
+  fprintf(stderr, "magic number does not match!\n");
   return 0;
 
 }
@@ -224,39 +229,45 @@ void compress(const char *filename)
     int c;
     int count=1;
     long int sav;
-
-    /* only run if filename exists */
     
     new_file = filename_add_ext(filename, ext);
 
     FILE *fp1; 
     FILE *fp2;
     fp1 = fopen(filename,"rb");
-    fp2 = fopen(new_file,"wb");
 
-    fputs("!RLE",fp2);
+    if (fp1 != NULL)
+    {
+      fp2 = fopen(new_file,"wb");
 
-    while ((c=fgetc(fp1)) != EOF)
-    { 
-      sav = ftell(fp1);
+      fputs("!RLE",fp2);
+
+      while ((c=fgetc(fp1)) != EOF)
+      { 
+        sav = ftell(fp1);
       
-      if(c != fgetc(fp1))
-      {
-        fputc(count,fp2);
-        fputc(c,fp2);
-        count = 1;
+        if(c != fgetc(fp1))
+        {
+          fputc(count,fp2);
+          fputc(c,fp2);
+          count = 1;
+        }
+
+        else
+          {
+            count++;
+          }
+      
+        fseek(fp1,sav,SEEK_SET);
       }
 
-      else
-        {
-          count++;
-        }
-      
-      fseek(fp1,sav,SEEK_SET);
+      fclose(fp1);
+      fclose(fp2);
     }
-
-    fclose(fp1);
-    fclose(fp2);
+    else
+    {
+      fprintf(stderr, "File is empty\n");
+    }
 }
 
 
@@ -301,12 +312,14 @@ void expand(const char *filename)
         }
       }
       fclose(fp2);
+      
     }
 
     else
       fprintf(stderr, "Incorrect file extension or Magic Number Sequence\n");
 
     fclose(fp1);
+    free(new_filename);
 }
 
 
