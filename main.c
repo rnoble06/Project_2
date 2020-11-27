@@ -207,7 +207,8 @@ void compress(const char *filename)
     char *ext = ".rle";
     char *new_file;
     int c;
-    int idx;
+    int count=1;
+    long int sav;
     
     new_file = filename_add_ext(filename, ext);
 
@@ -220,7 +221,21 @@ void compress(const char *filename)
 
     while ((c=fgetc(fp1)) != EOF)
     { 
-      fputc(c,fp2);
+      sav = ftell(fp1);
+      
+      if(c != fgetc(fp1))
+      {
+        fputc(count,fp2);
+        fputc(c,fp2);
+        count = 1;
+      }
+
+      else
+        {
+          count++;
+        }
+      
+      fseek(fp1,sav,SEEK_SET);
     }
 
     fclose(fp1);
