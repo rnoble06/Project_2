@@ -180,7 +180,22 @@ int check_ext(const char *filename)
 int check_magic(FILE *fp)
 {
     /* Your code goes here! */
-    /* open and read first 6 bits, check against magic number, don't forget to close file */
+    /* Magic Number 21 52 4c 45 (hexadecimal) */
+    /* fgets compare to magic number string */
+    char *magic = "!RLE";
+    char first_four[5];
+    int idx=0;
+    
+    rewind(fp);
+    fgets(first_four,5,fp);
+
+    if (strcmp(magic,first_four) == 0)
+    {
+      printf("Successful\n");
+      return 1;
+    }
+  fprintf(stderr, "magic number does not match!");
+  return 0;
 
 }
 
@@ -209,6 +224,8 @@ void compress(const char *filename)
     int c;
     int count=1;
     long int sav;
+
+    /* only run if filename exists */
     
     new_file = filename_add_ext(filename, ext);
 
