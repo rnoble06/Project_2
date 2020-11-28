@@ -268,6 +268,8 @@ void compress(const char *filename)
     {
       fprintf(stderr, "File is empty\n");
     }
+    free(new_file);
+
 }
 
 
@@ -287,14 +289,15 @@ void compress(const char *filename)
  * any run length decoding. */
 void expand(const char *filename)
 {
-    /* Your code goes here! */
+      /* Your code goes here! */
     int c;
     int n;
     char *new_filename;
-    new_filename = filename_rm_ext(filename);
     
     FILE *fp1; 
     FILE *fp2;
+
+    new_filename = filename_rm_ext(filename);
     fp1 = fopen(filename,"rb");
 
     if(check_ext(filename) && check_magic(fp1))
@@ -319,7 +322,8 @@ void expand(const char *filename)
       fprintf(stderr, "Incorrect file extension or Magic Number Sequence\n");
 
     fclose(fp1);
-    free(new_filename);
+    free(new_filename);  
+
 }
 
 
